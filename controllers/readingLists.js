@@ -1,7 +1,7 @@
 const express = require("express");
 const readingListRouter = express.Router({ mergeParams: true });
 
-const db = require("../../db/index");
+const db = require("../db/index");
 
 readingListRouter.post("/api/v1/lists", async (req, res) => {
     const body = req.body;
