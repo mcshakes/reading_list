@@ -9,7 +9,9 @@ booksRouter.get("/api/v1/lists/:id/books", async (req,res) => {
 
         const books = await db.query("SELECT * FROM books WHERE reading_list_id=$1", [req.params.id]);
 
-        list.rows[0].books = books.rows;
+        if (books.rowCount != 0) {
+            list.rows[0].books = books.rows;
+        } 
 
         res.status(200).json({
             status: "success",
