@@ -28,3 +28,9 @@ const createTable = async function (tableName) => {
     await pool.end()
     return res
 }
+
+// CREATE TABLE books (
+// id SERIAL PRIMARY KEY,
+// title TEXT,
+// author TEXT,
+// reading_list_id INTEGER REFERENCES reading_lists (id) on DELETE CASCADE);
