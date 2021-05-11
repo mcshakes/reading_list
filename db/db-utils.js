@@ -33,4 +33,6 @@ const createTable = async function (tableName) => {
 // id SERIAL PRIMARY KEY,
 // title TEXT,
 // author TEXT,
+// created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+// completed boolean DEFAULT FALSE
 // reading_list_id INTEGER REFERENCES reading_lists (id) on DELETE CASCADE);
