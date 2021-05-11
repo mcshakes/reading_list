@@ -49,4 +49,23 @@ booksRouter.post("/api/v1/lists/:id/books", async (req,res) => {
     }
 })
 
+booksRouter.delete("/api/v1/lists/:list_id/books/:book_id", async (req,res) => {
+
+    try {
+        const results = await db.query("DELETE FROM books WHERE id = $1", [req.params.book_id]);
+        
+        // NEED TO HANDLE WHERE ITEM ALREADY DELETED
+
+        res.status(200).json({
+            status: "success",
+            // results: list,
+            // data: {
+            //     reading_lists: list
+            // }
+        })
+    } catch (err) {
+        console.log(err)
+    }
+})
+
 module.exports = booksRouter;
