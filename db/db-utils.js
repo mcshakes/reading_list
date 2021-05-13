@@ -34,18 +34,23 @@ const insertReadingList = async function (tableName, name, list_type) {
     return await db.query(`INSERT INTO ${tableName} (name, list_type) values ($1, $2) returning *`,
             [name, list_type]);
 
+}
+
+const selectReadingList = async function (tableName, limit = 'ALL', columns = '*') {
+    return await db.query(`SELECT ${columns} FROM ${tableName} LIMIT ${limit}`)
+
     await db.release()
 }
 
 
 const dropTable = async function (tableName) {
-    await db.query(`DROP TABLE IF EXISTS ${tableName}`)
-    // await db.end()
+    return await db.query(`DROP TABLE IF EXISTS ${tableName}`)
 }
 
 module.exports = {
     createTable,
     insertReadingList,
+    selectReadingList,
     dropTable
 }
 

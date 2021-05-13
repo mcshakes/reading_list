@@ -1,4 +1,4 @@
-const { createTable, insertReadingList, dropTable } = require("../db/db-utils");
+const { createTable, insertReadingList, selectReadingList, dropTable } = require("../db/db-utils");
 
 
 describe('Database Utils', () => {
@@ -22,12 +22,12 @@ describe('Database Utils', () => {
         })
     })
 
-    // describe('select', () => {
-    //     it('should select items from the table', async () => {
-    //       const res = await select('test_restaurants')
-    //       expect(res.rows).toStrictEqual([ { id: 1, name: 'Pasta Joint', price_range: 3, street_address: "3800 Perry St", city: "Denver", food_type: "American", zipcode: "80212"} ])
-    //     })
-    // })
+    describe('selectReadingList', () => {
+        it('should select items from the table', async () => {
+          const res = await selectReadingList('test_reading_lists')
+          expect(res.rows).toStrictEqual([ { id: 1, name: 'Pasta Books', list_type: "Food Blog"} ])
+        })
+    })
 
     afterAll(async done => {
         await dropTable('test_reading_lists')
