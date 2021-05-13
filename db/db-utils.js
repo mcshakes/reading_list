@@ -27,7 +27,26 @@ const createTable = async function (tableName) {
         )
     
     await db.release()
-    return res
+}
+
+const insertReadingList = async function (tableName, name, list_type) {
+
+    return await db.query(`INSERT INTO ${tableName} (name, list_type) values ($1, $2) returning *`,
+            [name, list_type]);
+
+    await db.release()
+}
+
+
+const dropTable = async function (tableName) {
+    await db.query(`DROP TABLE IF EXISTS ${tableName}`)
+    // await db.end()
+}
+
+module.exports = {
+    createTable,
+    insertReadingList,
+    dropTable
 }
 
 // CREATE TABLE books (
@@ -37,17 +56,3 @@ const createTable = async function (tableName) {
 // created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
 // completed boolean DEFAULT FALSE
 // reading_list_id INTEGER REFERENCES reading_lists (id) on DELETE CASCADE);
-
-const dropTable = async function (tableName) {
-    // const client = new Pool(getConnection())
-
-    // const client = await db.connect()
-
-    await db.query(`DROP TABLE IF EXISTS ${tableName}`)
-    await db.end().then(() => console.log("Test Pool has ended"))
-}
-
-module.exports = {
-    createTable,
-    dropTable
-}

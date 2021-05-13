@@ -1,4 +1,4 @@
-const { createTable, dropTable } = require("../db/db-utils");
+const { createTable, insertReadingList, dropTable } = require("../db/db-utils");
 
 
 describe('Database Utils', () => {
@@ -14,14 +14,13 @@ describe('Database Utils', () => {
       })
     })
 
-    // describe('insert', () => {
-    //     it('should insert an item into the table', async () => {
-    //       const res = await insertRestaurant('test_restaurants', 'Pasta Joint', "3800 Perry St", "Denver", "80212", 3, "American")
+    describe('insertReadingList', () => {
+        it('should insert a Reading List into the table', async () => {
+          const res = await insertReadingList('test_reading_lists', 'Pasta Books', "Food Blog")
         
-    //       //   [name, street_address, city, zipcode, price_range, food_type])     In this order
-    //       expect(res.rowCount).toEqual(1)
-    //     })
-    // })
+          expect(res.rowCount).toEqual(1)
+        })
+    })
 
     // describe('select', () => {
     //     it('should select items from the table', async () => {
@@ -30,7 +29,8 @@ describe('Database Utils', () => {
     //     })
     // })
 
-    afterAll(async () => {
+    afterAll(async done => {
         await dropTable('test_reading_lists')
+        done();
     })
 })
