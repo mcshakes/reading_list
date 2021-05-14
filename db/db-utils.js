@@ -11,7 +11,7 @@ const db = require("./index");
 //     }
 // }
 
-const createTable = async function (tableName) {
+const createTableList = async function (tableName) {
     // const pool = new Pool(getConnection)
 
     // const client = await db.connect()
@@ -48,7 +48,7 @@ const dropTable = async function (tableName) {
 }
 
 module.exports = {
-    createTable,
+    createTableList,
     insertReadingList,
     selectReadingList,
     dropTable

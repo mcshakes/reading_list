@@ -1,11 +1,11 @@
-const { createTable, insertReadingList, selectReadingList, dropTable } = require("../db/db-utils");
+const { createTableList, insertReadingList, selectReadingList, dropTable } = require("../db/db-utils");
 
 
 describe('Database Utils', () => {
     
     describe('createTable', () => {
       it('should create the table in the database', async () => {
-        const res = await createTable('test_reading_lists')
+        const res = await createTableList('test_reading_lists')
 
         // because we just created the table, no rows should exist
         // the first res is actually the result from the DROP TABLE, so we take the second
