@@ -2,6 +2,7 @@ const express = require("express");
 const readingListRouter = express.Router({ mergeParams: true });
 
 const db = require("../db/index");
+const { insertReadingList } = require("../db/db-utils");
 
 readingListRouter.post("/api/v1/lists", async (req, res) => {
     const body = req.body;
@@ -11,8 +12,9 @@ readingListRouter.post("/api/v1/lists", async (req, res) => {
     }
 
     try {
-        const results = await db.query("INSERT INTO reading_lists (name, list_type) values ($1, $2) returning *", 
-                            [req.body.name, req.body.list_type]);
+        // const results = await db.query("INSERT INTO reading_lists (name, list_type) values ($1, $2) returning *", 
+        //                     [req.body.name, req.body.list_type]);
+        const result = await insertReadingList("reading_lists", req.body.name, req.body.list_type)
 
         res.status(201).json({
             status: "success",
