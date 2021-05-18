@@ -18,9 +18,7 @@ readingListRouter.post("/api/v1/lists", async (req, res) => {
 
         res.status(201).json({
             status: "success",
-            data: {
-                reading_lists: results.rows
-            }
+            data: result.rows[0]
         })
     } catch (err) {
         console.log(err)
@@ -52,9 +50,7 @@ readingListRouter.get("/api/v1/lists/:id", async (req, res) => {
         res.status(200).json({
             status: "success",
             results: results.rows.length,
-            data: {
-                reading_lists: results.rows
-            }
+            data: results.rows[0]
         })
     } catch (err) {
         console.log(err)
@@ -69,9 +65,7 @@ readingListRouter.put("/api/v1/lists/:id", async (req, res) => {
         res.status(200).json({
             status: "success",
             results: results.rows.length,
-            data: {
-                reading_lists: results.rows
-            }
+            data: results.rows[0]
         })
     } catch (err) {
         console.log(err)
@@ -83,7 +77,7 @@ readingListRouter.delete("/api/v1/lists/:id", async (req, res) => {
     try {
         const results = await db.query("DELETE FROM reading_lists WHERE id = $1", [req.params.id]);
 
-        res.status(200).json({
+        res.status(204).json({
             status: "success"
         })
     } catch (err) {
