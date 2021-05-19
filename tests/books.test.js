@@ -60,6 +60,49 @@ describe("API : Books Service : ", () => {
             expect(response.body["data"]["reading_lists"]["books"]).toBeType("array")
         })
 
-        
+        test("JSON Response object is correct Book list", () => {
+            expect(response.body["data"]["reading_lists"]["books"][0]).toBeType("object")
+            expect(response.body["data"]["reading_lists"]["books"][0]["title"]).toEqual("python for dummies")
+            expect(response.body["data"]["reading_lists"]["books"][0]["author"]).toEqual("Guy Fieri")
+            expect(response.body["data"]["reading_lists"]["books"][0]["completed"]).toBeFalsy()
+        })
+
     })
+
+    describe("Add Book to List", () => {
+        let response;
+
+        beforeAll(async () => {
+            newBook = {
+                title: "Saving Money",
+                author: "Stevie McGreevy"
+            }
+            response = await api
+                            .post("/api/v1/lists/1/books")
+                            .send(newBook)
+
+        })
+
+        test("returned as succesful JSON", async () => {
+            expect(response.type).toBe("application/json")
+            expect(response.status).toBe(201)
+            expect(response)
+        })
+
+        test("new Book object contains new values", async () => {
+            expect(response.body["data"]["title"]).toEqual("Saving Money")
+            expect(response.body["data"]["author"]).toBe("Stevie McGreevy")
+            expect(response.body["data"]["reading_list_id"]).toBe(1)
+        })
+
+        test("List now has two books", async () => {
+            newResponse = await api.get("/api/v1/lists/1/books")
+            expect(newResponse.body["data"]["reading_lists"]["books"].length).toBe(2)
+        })
+
+    })
+
+
+
+
 })

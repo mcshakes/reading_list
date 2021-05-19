@@ -1,7 +1,6 @@
 const { createTableList, insertReadingList, dropTable } = require("../db/db-utils");
 const supertest = require("supertest");
 const app = require("../app");
-const { types } = require("pg");
 
 const api = supertest(app)
 
