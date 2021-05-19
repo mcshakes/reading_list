@@ -34,15 +34,12 @@ booksRouter.post("/api/v1/lists/:id/books", async (req,res) => {
     }
 
     try {
-        const list = await db.query("INSERT INTO books (title, author, reading_list_id) VALUES ($1, $2, $3);", 
+        const list = await db.query("INSERT INTO books (title, author, reading_list_id) VALUES ($1, $2, $3) returning *;", 
                         [body.title, body.author, req.params.id]);
 
         res.status(201).json({
             status: "success",
-            // results: list,
-            // data: {
-            //     reading_lists: list
-            // }
+            data: list.rows[0]
         })
     } catch (err) {
         console.log(err)

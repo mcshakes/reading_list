@@ -17,9 +17,9 @@ const createTableList = async function (tableName) {
     // const client = await db.connect()
 
     return await db.query(
-        `DROP TABLE IF EXISTS ${tableName};
+        `DROP TABLE IF EXISTS ${tableName} cascade;
             CREATE TABLE ${tableName} (
-                id SERIAL PRIMARY KEY, 
+                id int generated always as identity PRIMARY KEY, 
                 name VARCHAR(50) not null,
                 list_type VARCHAR(50) not null
                 );
@@ -29,24 +29,40 @@ const createTableList = async function (tableName) {
     await db.release()
 }
 
-const createTableBooks = async function (tableName) {
+// CREATE TABLE test_list (
+//     id int generated always as identity PRIMARY KEY, 
+//     name VARCHAR(50) not null,
+//     list_type VARCHAR(50) not null
+//     );
+
+// CREATE TABLE test_books (
+//     id int generated always as identity PRIMARY KEY, 
+//     title TEXT not null,
+//     author TEXT not null,
+//     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+//     completed boolean DEFAULT FALSE,
+//     reading_list_id INTEGER REFERENCES test_list (id) on DELETE CASCADE
+// );
+const createTableBooks = async function (tableName, listName) {
 
     return await db.query(
         `DROP TABLE IF EXISTS ${tableName};
 
             CREATE TABLE ${tableName} (
-                id SERIAL PRIMARY KEY, 
-                name TEXT not null,
+                id int generated always as identity PRIMARY KEY, 
+                title TEXT not null,
                 author TEXT not null,
                 created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 completed boolean DEFAULT FALSE,
-                reading_list_id INTEGER REFERENCES reading_lists (id) on DELETE CASCADE
+                reading_list_id INTEGER REFERENCES ${listName} (id) on DELETE CASCADE
             );
         `
     )
 
     await db.release()
 }
+// INSERT INTO test_list (name, list_type) values ('test', 'test_theme') returning *;
+// INSERT INTO test_books (title, author, reading_list_id) VALUES ('poop', 'poop mcgoop', 1);
 
 //  -------------------------- INSERT INTO TABLES --------------------------
 
@@ -60,7 +76,6 @@ const insertBookInReadingList = async function (tableName, title, author, readin
     await db.query(`INSERT INTO ${tableName} (title, author, reading_list_id) VALUES ($1, $2, $3);`, 
                         [title, author, reading_list_id]);
 
-    await db.release()
 }
 
 const selectReadingList = async function (tableName, limit = 'ALL', columns = '*') {
@@ -71,7 +86,7 @@ const selectReadingList = async function (tableName, limit = 'ALL', columns = '*
 
 
 const dropTable = async function (tableName) {
-    return await db.query(`DROP TABLE IF EXISTS ${tableName}`)
+    return await db.query(`DROP TABLE IF EXISTS ${tableName} cascade;`)
 }
 
 module.exports = {
