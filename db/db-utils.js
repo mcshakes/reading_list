@@ -35,6 +35,12 @@ const createTableList = async function (tableName) {
 //     list_type VARCHAR(50) not null
 //     );
 
+// CREATE TABLE test_list (
+//     id int generated always as identity PRIMARY KEY, 
+//     name VARCHAR(50) not null,
+//     list_type VARCHAR(50) not null
+//     );
+
 // CREATE TABLE test_books (
 //     id int generated always as identity PRIMARY KEY, 
 //     title TEXT not null,
@@ -98,3 +104,10 @@ module.exports = {
     dropTable
 }
 
+
+// CREATE TABLE users (
+// uuid uuid PRIMARY KEY NOT NULL,
+// name text not null,
+// email text not null);
+
+// ALTER TABLE reading_lists ADD COLUMN user_id REFERENCES users (id) ON DELETE CASCADE;

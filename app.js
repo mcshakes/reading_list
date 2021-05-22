@@ -2,6 +2,7 @@ const express = require("express");
 const booksRouter = require("./controllers/books");
 const readingListRouter = require("./controllers/readingLists")
 const middleware = require('./utils/middleware')
+const cors = require("cors");
 const app = express();
 
 app.use(function(req, res, next) {
@@ -11,9 +12,11 @@ app.use(function(req, res, next) {
     next();
 });
 
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.json({ type: 'application/vnd.api+json' }));
+app.use(cors())
 
 app.use(readingListRouter);
 app.use(booksRouter);
