@@ -11,10 +11,20 @@ const db = require("../db/index");
 
 // });
 
-authRouter.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
-authRouter.get('/auth/google/redirect', passport.authenticate('google', 
-    { session: false, failureRedirect: `https://localhost:3000/login` }), (req, res) => {
-        res.redirect(req.user); //req.user has the redirection_url
+// @desc Auth with Google
+// @route GET /auth/google
+authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+
+// @desc Google auth callback
+// @route GET /auth/google/callback
+authRouter.get('/google/callback', passport.authenticate('google', 
+    { failureRedirect: `/` }), (req, res) => {
+        res.redirect("/dashboard"); //req.user has the redirection_url
 });
+
+// authRouter.get('/auth/google/redirect', passport.authenticate('google', 
+//     { session: false, failureRedirect: `https://localhost:3000/login` }), (req, res) => {
+//         res.redirect(req.user); //req.user has the redirection_url
+// });
 
 module.exports = authRouter;
