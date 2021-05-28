@@ -104,10 +104,20 @@ module.exports = {
     dropTable
 }
 
+// THE FOLLOWING BELOW MAKES USERS AND LISTS WORK
 
 // CREATE TABLE users (
-// uuid uuid PRIMARY KEY NOT NULL,
-// name text not null,
-// email text not null);
+    // id INT GENERATED ALWAYS AS IDENTITY,
+    // name text not null,
+    // email text not null,
+    // google_id bigint);
 
-// ALTER TABLE reading_lists ADD COLUMN user_id REFERENCES users (id) ON DELETE CASCADE;
+// ALTER TABLE users
+// ADD CONSTRAINT user_id UNIQUE (id);
+
+// ALTER TABLE reading_lists
+// ADD COLUMN user_id int,
+// ADD CONSTRAINT reading_lists_user_id_fkey
+// FOREIGN KEY (user_id)
+// REFERENCES users(id)
+// ON DELETE CASCADE;
