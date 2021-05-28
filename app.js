@@ -6,8 +6,9 @@ const cors = require("cors");
 
 const session = require("express-session");
 const passport = require("passport");
+const googleAuthRouter = require("./controllers/googleAuth");
 
-require("./services/google_oauth")(passport);
+require("./services/google_oauth");
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use(passport.session())
 
 app.use(readingListRouter);
 app.use(booksRouter);
+app.use("/auth", googleAuthRouter);
 app.use(middleware.unknownEndpoint)
 
 
