@@ -110,7 +110,7 @@ module.exports = {
     // id INT GENERATED ALWAYS AS IDENTITY,
     // name text not null,
     // email text not null,
-    // google_id bigint);
+    // google_id varchar);
 
 // ALTER TABLE users
 // ADD CONSTRAINT user_id UNIQUE (id);
