@@ -23,33 +23,28 @@ passport.use(new GoogleStrategy({
     }
 
     try {
-      let user = await db.query(`SELECT user FROM users WHERE google_id=${profile.id}::VARCHAR`, (err,res) => {
-        if (err) {
-          console.log("user SELECTION error: ", err.stack)
-        }     
-      })
+        let results = await db.query(`SELECT * FROM users WHERE google_id=${profile.id}::VARCHAR`)
 
+        if (results.rows.length) {
+          console.log("")
+          console.log("User Exists within users table", results.rows)
+          done(null, results.rows[0])
+        } 
 
-      if (user) {
-        done(null, user)
-      } 
+        else {
+          console.log("")
+          console.log("No USER found. Must create new User in DB ", results.rows)
 
-      else {
-        console.log("")
-        console.log("WAS THERE USER? ", user)
-        console.log("")
+          let user = await db.query(`INSERT INTO users (name, email, google_id) VALUES ($1, $2, $3) RETURNING id, name, email, google_id;`, 
+          [newUser.name, newUser.email, newUser.googleId])
 
-        user = await db.query(`INSERT INTO users (name, email, google_id) VALUES ($1, $2, $3);`, 
-        [newUser.name, newUser.email, newUser.googleId])
-
-        done(null, user)
-      }
+          done(null, user.rows[0])
+        }
     } catch (err) {
-      console.error(err)
+        console.log("")
+        console.error("Google Auth Error with PG: ", err)
     }
-    
-
-    
+   
   }
 ));  
 
