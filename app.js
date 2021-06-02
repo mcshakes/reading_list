@@ -7,6 +7,7 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 const googleAuthRouter = require("./controllers/googleAuth");
+const cookieSession = require("cookie-session");
 
 require("./services/google_oauth");
 
@@ -26,10 +27,10 @@ app.use(express.json({ type: 'application/vnd.api+json' }));
 app.use(cors())
 
 // Sessions
-app.use(session({
-  secret: "keyboard cat",
-  resave: false,
-  saveUninitialized: false
+app.use(cookieSession({
+  maxAge: 24 * 60 *60 * 1000,
+  keys: [process.env.COOKIE_KEY],
+  name: "session"
 }))
 
 // Passport MIddleware
