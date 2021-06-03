@@ -12,7 +12,6 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   passReqToCallback: true
 },
-
   async (req, accessToken, refreshToken, profile, done) => {
     // console.log("User Profile", profile)
     
