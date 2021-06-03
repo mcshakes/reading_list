@@ -4,6 +4,7 @@ const readingListRouter = express.Router({ mergeParams: true });
 const db = require("../db/index");
 const { insertReadingList } = require("../db/db-utils");
 
+
 readingListRouter.post("/api/v1/lists", async (req, res) => {
     const body = req.body;
 
@@ -25,6 +26,7 @@ readingListRouter.post("/api/v1/lists", async (req, res) => {
     }
 })
 
+// Gets ALL watchlists regardless of  AUTH:
 readingListRouter.get("/api/v1/lists", async (req, res) => {
 
     try {
