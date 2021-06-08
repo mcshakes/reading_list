@@ -1,15 +1,5 @@
+const { text } = require("body-parser");
 const db = require("./index");
-// const { Pool } = require('pg')
-
-// const getConnection = () => {
-//     return {
-//         user: process.env.PGUSER,
-//         host: process.env.PGHOST,
-//         database: process.env.PGDATABASE,
-//         port: 5432,
-//         password: null
-//     }
-// }
 
 const createTableList = async function (tableName) {
     // const pool = new Pool(getConnection)
@@ -29,26 +19,7 @@ const createTableList = async function (tableName) {
     await db.release()
 }
 
-// CREATE TABLE test_list (
-//     id int generated always as identity PRIMARY KEY, 
-//     name VARCHAR(50) not null,
-//     list_type VARCHAR(50) not null
-//     );
 
-// CREATE TABLE test_list (
-//     id int generated always as identity PRIMARY KEY, 
-//     name VARCHAR(50) not null,
-//     list_type VARCHAR(50) not null
-//     );
-
-// CREATE TABLE test_books (
-//     id int generated always as identity PRIMARY KEY, 
-//     title TEXT not null,
-//     author TEXT not null,
-//     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-//     completed boolean DEFAULT FALSE,
-//     reading_list_id INTEGER REFERENCES test_list (id) on DELETE CASCADE
-// );
 const createTableBooks = async function (tableName, listName) {
 
     return await db.query(
@@ -107,10 +78,20 @@ module.exports = {
 // THE FOLLOWING BELOW MAKES USERS AND LISTS WORK
 
 // CREATE TABLE users (
-    // id INT GENERATED ALWAYS AS IDENTITY,
-    // name text not null,
-    // email text not null,
-    // google_id varchar);
+//     id INT GENERATED ALWAYS AS IDENTITY,
+//     username text,
+//     email varchar() not null,
+//     token text,
+//     password_digest text,
+//     created_at timestamp
+//     );
+
+// CREATE TABLE shelves (
+//     id int generated always as identity PRIMARY KEY, 
+//     name VARCHAR(50) not null,
+//     list_type VARCHAR(50) not null,
+//     user_id INTEGER REFERENCES user (id) on DELETE CASCADE
+//     );
 
 // ALTER TABLE users
 // ADD CONSTRAINT user_id UNIQUE (id);
@@ -121,3 +102,18 @@ module.exports = {
 // FOREIGN KEY (user_id)
 // REFERENCES users(id)
 // ON DELETE CASCADE;
+
+// CREATE TABLE test_list (
+//     id int generated always as identity PRIMARY KEY, 
+//     name VARCHAR(50) not null,
+//     list_type VARCHAR(50) not null
+//     );
+
+// CREATE TABLE test_books (
+//     id int generated always as identity PRIMARY KEY, 
+//     title TEXT not null,
+//     author TEXT not null,
+//     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+//     completed boolean DEFAULT FALSE,
+//     reading_list_id INTEGER REFERENCES test_list (id) on DELETE CASCADE
+// );
