@@ -77,21 +77,9 @@ module.exports = {
 
 // THE FOLLOWING BELOW MAKES USERS AND LISTS WORK
 
-// CREATE TABLE users (
-//     id INT GENERATED ALWAYS AS IDENTITY,
-//     username text,
-//     email varchar() not null,
-//     token text,
-//     password_digest text,
-//     created_at timestamp
-//     );
 
-// CREATE TABLE shelves (
-//     id int generated always as identity PRIMARY KEY, 
-//     name VARCHAR(50) not null,
-//     list_type VARCHAR(50) not null,
-//     user_id INTEGER REFERENCES user (id) on DELETE CASCADE
-//     );
+
+
 
 // ALTER TABLE users
 // ADD CONSTRAINT user_id UNIQUE (id);
