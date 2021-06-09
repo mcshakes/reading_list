@@ -3,14 +3,18 @@ const localAuth = express.Router({ mergeParams: true });
 const bcrypt = require("bcrypt");
 const crypto = require('crypto');
 const db = require("../db");
+const jwt = require("jsonwebtoken");
 
 
 localAuth.post('/register', async (req, res) => {
     const { username, email, password } = req.body
         
     try {
+
+        const hashedPassword = await hashPassword(password);
+
         let savedUser = await db.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email`,
-        [username, email, password])
+        [username, email, hashedPassword])
 
         if (savedUser.rows[0]) {
             res.status(201).json({
@@ -32,13 +36,25 @@ localAuth.post('/register', async (req, res) => {
         console.log("unknown INSERT error: \n", err);
         res.status(500).json({ error: "Cannot register user at the moment!" });
     }
-    
 });
 
+localAuth.post('/login', async (req, res) => {
+    const { username, password } = req.body
 
-// @desc Auth with email and password
-// @route GET /auth/google/login
-// localAuth.get('/api/v1/auth/login', passport.authenticate('local'), );
+    try {
+        const foundUser = await findUsername(username)
+        console.log("USER", foundUser)
+        const unhashedPass = await checkPassword(password, foundUser);        
+        console.log("PASS?", unhashedPass)
+
+        
+    } catch (err) {
+            
+        console.log("Error Loggin in: \n", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 module.exports = localAuth;
 
@@ -50,14 +66,34 @@ const hashPassword = (password) => {
     })
 }
 
-const findUsername = async (username) => {
-    await db.query(`SELECT * FROM users WHERE username = $1`, [username])
+const checkPassword = (reqPassword, foundUser) => {
+    return new Promise((resolve, reject) =>
+      bcrypt.compare(reqPassword, foundUser.password, (err, response) => {
+          if (err) {
+            reject(err)
+          }
+          else if (response) {
+            resolve(response)
+          } 
+          else {
+            reject(new Error('Passwords do not match.'))
+          }
+      })
+    )
+  }
+
+const findUsername = (username) => {
+    return db.query(`SELECT * FROM users WHERE username = $1`, [username])
             .then((data) => data.rows[0])
 }
 
 const findEmail = async (email) => {
     await db.query(`SELECT * FROM users WHERE email = $1`, [email])
         .then((data) => data.rows[0])
+}
+
+function generateAccessToken(username) {
+    return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: "1800s" })
 }
 
 const createUser = (user) => {
