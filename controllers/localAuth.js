@@ -33,6 +33,10 @@ localAuth.post('/register', async (req, res) => {
             })
         }
     } catch (err) {
+        
+        if (err.code === '23505') {
+            return res.status(422).json({message: "This username exists"})
+        }
         console.log("Error: ", err);
         res.status(500).json({ error: "Cannot register user at the moment!" });
     }
