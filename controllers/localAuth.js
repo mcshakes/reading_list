@@ -4,24 +4,10 @@ const bcrypt = require("bcrypt");
 const crypto = require('crypto');
 const db = require("../db");
 
-// @desc Auth with email and password
-// @route GET /auth/google/login
+
 localAuth.post('/register', async (req, res) => {
     const { username, email, password } = req.body
-    
-    // check if user exists
-    const usernameExists = await findUsername(username)
-
-    if (usernameExists) {
-        return res.status(422).json({message: "This username exists"})
-    }
-
-    const emailExists = await findEmail(email)
-
-    if (emailExists) {        
-        return res.status(409).json({ message: "User with email already exists!" });
-    }
-    
+        
     try {
         let savedUser = await db.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email`,
         [username, email, password])
@@ -34,10 +20,16 @@ localAuth.post('/register', async (req, res) => {
         }
     } catch (err) {
         
-        if (err.code === '23505') {
+
+        if (err.constraint === 'users_email_key') {
+            return res.status(409).json({message: "A user with this email exists"})
+        }
+
+        if (err.constraint === 'users_username_key') {
             return res.status(422).json({message: "This username exists"})
         }
-        console.log("Error: ", err);
+        
+        console.log("unknown INSERT error: \n", err);
         res.status(500).json({ error: "Cannot register user at the moment!" });
     }
     
