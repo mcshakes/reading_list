@@ -1,6 +1,6 @@
 const express = require("express");
 const readingListRouter = express.Router({ mergeParams: true });
-
+const { verify } = require("../middleware/authenticate");
 const db = require("../db/index");
 const { insertReadingList } = require("../db/db-utils");
 
@@ -26,56 +26,49 @@ readingListRouter.get("/lists", async (req, res) => {
 
 // @desc Create a List as Authenticated User
 // @route POST 
-readingListRouter.post("/users/:id/lists", async (req, res) => {
-    const body = req.body;
+readingListRouter.post("/users/:id/lists", verify, async (req, res) => {
+    const { name, list_type } = req.body;
+    const { id }  = req.params;
 
-    console.log("PARAMS COMING IN", req.params)
-    res.status(200).json({
-        message: "HEY THERE!"
-    })
-    // if (body === undefined) {
-    //     return res.status(400).json({ error: "content missing"})
-    // }
+    if (req.body === undefined) {
+        return res.status(400).json({ error: "content missing"})
+    }
 
-    // try {
-    //     // const results = await db.query("INSERT INTO reading_lists (name, list_type) values ($1, $2) returning *", 
-    //     //                     [req.body.name, req.body.list_type]);
-    //     const result = await insertReadingList("reading_lists", req.body.name, req.body.list_type)
+    console.log("PARAMS COMING IN", id)
+    console.log("BODY COMING IN", name)
 
-    //     res.status(201).json({
-    //         status: "success",
-    //         data: result.rows[0]
-    //     })
-    // } catch (err) {
-    //     console.log(err)
-    // }
+    try {
+        const results = await db.query("INSERT INTO shelves (name, list_type, user_id) values ($1, $2, $3) returning *", 
+                            [name, list_type, id]);
+
+        res.status(201).json({
+            status: "success",
+            data: results.rows[0]
+        })
+    } catch (err) {
+        console.log(err)
+    }
+  
 })
 
-// @desc Create a List as Authenticated User
+// @desc See a User's list without authentication
 // @route GET /users/:id/lists
-readingListRouter.get("/users/:id/lists", async (req, res) => {
+readingListRouter.get("/users/:id/lists", verify, async (req, res) => {
     const body = req.body;
 
     console.log("PARAMS COMING IN for READING LISTS", req.params)
     console.log("BODY COMING IN", body)
-    // if (body === undefined) {
-    //     return res.status(400).json({ error: "content missing"})
-    // }
 
-    // try {
-    //     // const results = await db.query("INSERT INTO reading_lists (name, list_type) values ($1, $2) returning *", 
-    //     //                     [req.body.name, req.body.list_type]);
-    //     const result = await insertReadingList("reading_lists", req.body.name, req.body.list_type)
 
-    //     res.status(201).json({
-    //         status: "success",
-    //         data: result.rows[0]
-    //     })
-    // } catch (err) {
-    //     console.log(err)
-    // }
+    res.status(200).json({
+        status: "success",
+        data: "should have books"
+    })
 })
 
+
+// @desc Create a List as Authenticated User
+// @route GET 
 readingListRouter.post("/api/v1/lists", async (req, res) => {
     const body = req.body;
 
