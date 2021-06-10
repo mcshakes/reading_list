@@ -16,10 +16,13 @@ localAuth.post('/register', async (req, res) => {
         let savedUser = await db.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email`,
         [username, email, hashedPassword])
 
+        const token = generateAccessToken(savedUser.rows[0].username)
+
         if (savedUser.rows[0]) {
             res.status(201).json({
                 status: "success",
-                data: savedUser.rows[0]
+                data: savedUser.rows[0],
+                token: token
             })
         }
     } catch (err) {
@@ -39,15 +42,24 @@ localAuth.post('/register', async (req, res) => {
 });
 
 localAuth.post('/login', async (req, res) => {
-    const { username, password } = req.body
+    const { email, password } = req.body
 
     try {
-        const foundUser = await findUsername(username)
-        console.log("USER", foundUser)
-        const unhashedPass = await checkPassword(password, foundUser);        
-        console.log("PASS?", unhashedPass)
+        const foundUser = await findEmail(email)
 
-        
+        if (!foundUser) {
+            return res.status(500).json({ error: "No such human" });
+        }
+
+        const unhashedPass = await checkPassword(password, foundUser);        
+
+        const token = generateAccessToken(foundUser.username)
+
+        res.header("token", token)
+            .status(200)
+            .json({
+                token
+            })
     } catch (err) {
             
         console.log("Error Loggin in: \n", err);
@@ -88,12 +100,12 @@ const findUsername = (username) => {
 }
 
 const findEmail = async (email) => {
-    await db.query(`SELECT * FROM users WHERE email = $1`, [email])
+    return db.query(`SELECT * FROM users WHERE email = $1`, [email])
         .then((data) => data.rows[0])
 }
 
 function generateAccessToken(username) {
-    return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: "1800s" })
+    return jwt.sign({data: username}, process.env.TOKEN_SECRET, { expiresIn: 1600 })
 }
 
 const createUser = (user) => {

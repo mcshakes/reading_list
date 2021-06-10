@@ -1,6 +1,7 @@
 const express = require("express");
 const booksRouter = require("./controllers/books");
 const readingListRouter = require("./controllers/readingLists")
+const localAuth = require("./controllers/localAuth");
 const middleware = require('./utils/middleware')
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -51,10 +52,10 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
-
-app.use(readingListRouter);
-app.use(booksRouter);
 app.use("/auth", googleAuthRouter);
+app.use("/api/v1", localAuth);
+app.use("/api/v1", readingListRouter);
+app.use("/api/v1", booksRouter);
 app.use(middleware.unknownEndpoint)
 
 

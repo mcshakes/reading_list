@@ -5,7 +5,7 @@ const db = require("../db/index");
 const { insertReadingList } = require("../db/db-utils");
 
 // Gets ALL watchlists regardless of  AUTH:
-readingListRouter.get("/api/v1/lists", async (req, res) => {
+readingListRouter.get("/lists", async (req, res) => {
 
     try {
         const results = await db.query("SELECT * FROM reading_lists");
@@ -26,7 +26,7 @@ readingListRouter.get("/api/v1/lists", async (req, res) => {
 
 // @desc Create a List as Authenticated User
 // @route POST 
-readingListRouter.post("/api/v1/users/:id/lists", async (req, res) => {
+readingListRouter.post("/users/:id/lists", async (req, res) => {
     const body = req.body;
 
     console.log("PARAMS COMING IN", req.params)
@@ -53,7 +53,7 @@ readingListRouter.post("/api/v1/users/:id/lists", async (req, res) => {
 
 // @desc Create a List as Authenticated User
 // @route GET /users/:id/lists
-readingListRouter.get("/api/v1/users/:id/lists", async (req, res) => {
+readingListRouter.get("/users/:id/lists", async (req, res) => {
     const body = req.body;
 
     console.log("PARAMS COMING IN for READING LISTS", req.params)
