@@ -34,8 +34,6 @@ readingListRouter.post("/users/:id/lists", verify, async (req, res) => {
         return res.status(400).json({ error: "content missing"})
     }
 
-    console.log("PARAMS COMING IN", id)
-    console.log("BODY COMING IN", name)
 
     try {
         const results = await db.query("INSERT INTO shelves (name, list_type, user_id) values ($1, $2, $3) returning *", 
@@ -51,19 +49,22 @@ readingListRouter.post("/users/:id/lists", verify, async (req, res) => {
   
 })
 
+
 // @desc See a User's list without authentication
 // @route GET /users/:id/lists
-readingListRouter.get("/users/:id/lists", verify, async (req, res) => {
-    const body = req.body;
+readingListRouter.get("/users/:id/lists", async (req, res) => {
+    const { id } = req.params
 
-    console.log("PARAMS COMING IN for READING LISTS", req.params)
-    console.log("BODY COMING IN", body)
+    try {
+        const results = await db.query("SELECT * FROM shelves WHERE user_id=$1", [id]);
 
-
-    res.status(200).json({
-        status: "success",
-        data: "should have books"
-    })
+        res.status(200).json({
+            status: "success",
+            data: results.rows
+        })
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 

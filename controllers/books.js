@@ -1,5 +1,6 @@
 const express = require("express");
 const booksRouter = express.Router({ mergeParams: true });
+const { verify } = require("../middleware/authenticate");
 
 const db = require("../db/index");
 
@@ -25,17 +26,24 @@ booksRouter.get("/api/v1/lists/:id/books", async (req,res) => {
     }
 })
 
-booksRouter.post("/api/v1/lists/:id/books", async (req,res) => {
+// *********************************************************************************
+// @desc Add a book to user's list with AUTH
+// @route POST /users/:id/lists
+// *********************************************************************************
 
-    const body = req.body;
+booksRouter.post("/users/:user_id/lists/:shelf_id/books", verify,async (req,res) => {
 
-    if (body === undefined) {
+    if (req.body === undefined) {
         return res.status(400).json({ error: "content missing"})
     }
 
+    const { user_id, shelf_id } = req.params;
+    const { title, author } = req.body
+    
+
     try {
-        const list = await db.query("INSERT INTO books (title, author, reading_list_id) VALUES ($1, $2, $3) returning *;", 
-                        [body.title, body.author, req.params.id]);
+        const list = await db.query("INSERT INTO books (title, author, shelf_id) VALUES ($1, $2, $3) returning *;", 
+                        [title, author, shelf_id]);
 
         res.status(201).json({
             status: "success",
