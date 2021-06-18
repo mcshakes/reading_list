@@ -5,7 +5,7 @@ const { verify } = require("../middleware/authenticate");
 const db = require("../db/index");
 
 // *********************************************************************************
-// @desc get all books from user's list with AUTH
+// @desc get all books from user's list WITHOUT authentication
 // @route POST /users/:user_id/lists/:shelf_id/books
 // *********************************************************************************
 
@@ -24,7 +24,7 @@ booksRouter.get("/users/:user_id/shelves/:shelf_id/books", async (req,res) => {
             status: "success",
             results: shelvedBooks.rowCount,
             data: {
-                shelves: shelvedBooks.rows
+                books: shelvedBooks.rows
             }
         })
     } catch (err) {
@@ -37,7 +37,7 @@ booksRouter.get("/users/:user_id/shelves/:shelf_id/books", async (req,res) => {
 // @route POST /users/:user_id/lists/:shelf_id/books
 // *********************************************************************************
 
-booksRouter.post("/users/:user_id/lists/:shelf_id/books", verify, async (req,res) => {
+booksRouter.post("/users/:user_id/shelves/:shelf_id/books", verify, async (req,res) => {
 
     if (req.body === undefined) {
         return res.status(400).json({ error: "content missing"})

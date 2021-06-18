@@ -1,11 +1,9 @@
 const { text } = require("body-parser");
 const db = require("./index");
 
+
+
 const createTableList = async function (tableName) {
-    // const pool = new Pool(getConnection)
-
-    // const client = await db.connect()
-
     return await db.query(
         `DROP TABLE IF EXISTS ${tableName} cascade;
             CREATE TABLE ${tableName} (
