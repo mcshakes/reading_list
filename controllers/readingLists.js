@@ -1,36 +1,18 @@
 const express = require("express");
 const readingListRouter = express.Router({ mergeParams: true });
-
+const { verify } = require("../middleware/authenticate");
 const db = require("../db/index");
 const { insertReadingList } = require("../db/db-utils");
 
 
-readingListRouter.post("/api/v1/lists", async (req, res) => {
-    const body = req.body;
-
-    if (body === undefined) {
-        return res.status(400).json({ error: "content missing"})
-    }
-
-    try {
-        // const results = await db.query("INSERT INTO reading_lists (name, list_type) values ($1, $2) returning *", 
-        //                     [req.body.name, req.body.list_type]);
-        const result = await insertReadingList("reading_lists", req.body.name, req.body.list_type)
-
-        res.status(201).json({
-            status: "success",
-            data: result.rows[0]
-        })
-    } catch (err) {
-        console.log(err)
-    }
-})
-
-// Gets ALL watchlists regardless of  AUTH:
-readingListRouter.get("/api/v1/lists", async (req, res) => {
+// *********************************************************************************
+// @desc GET all shelves regardless of authentication
+// @route GET /shelves
+// *********************************************************************************
+readingListRouter.get("/shelves", async (req, res) => {
 
     try {
-        const results = await db.query("SELECT * FROM reading_lists");
+        const results = await db.query("SELECT * FROM shelves");
 
         res.status(200).json({
             status: "success",
@@ -43,6 +25,53 @@ readingListRouter.get("/api/v1/lists", async (req, res) => {
         console.log(err)
     }
 })
+
+// *********************************************************************************
+// @desc Create a shelf as Authenticated User
+// @route POST /users/:id/shelves
+// *********************************************************************************
+readingListRouter.post("/users/:id/shelves", verify, async (req, res) => {
+    const { name, list_type } = req.body;
+    const { id }  = req.params;
+
+    if (req.body === undefined) {
+        return res.status(400).json({ error: "content missing"})
+    }
+
+
+    try {
+        const results = await db.query("INSERT INTO shelves (name, list_type, user_id) values ($1, $2, $3) returning *", 
+                            [name, list_type, id]);
+
+        res.status(201).json({
+            status: "success",
+            data: results.rows[0]
+        })
+    } catch (err) {
+        console.log(err)
+    }
+  
+})
+
+// *********************************************************************************
+// @desc See a User's shelves WITHOUT authentication
+// @route GET /users/:id/shelves
+// *********************************************************************************
+readingListRouter.get("/users/:id/shelves", async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const results = await db.query("SELECT * FROM shelves WHERE user_id=$1", [id]);
+
+        res.status(200).json({
+            status: "success",
+            data: results.rows
+        })
+    } catch (err) {
+        console.log(err)
+    }
+})
+
 
 readingListRouter.get("/api/v1/lists/:id", async (req, res) => {
 
@@ -58,35 +87,6 @@ readingListRouter.get("/api/v1/lists/:id", async (req, res) => {
         console.log(err)
     }
 })
-
-readingListRouter.put("/api/v1/lists/:id", async (req, res) => {
-
-    try {
-        const results = await db.query("UPDATE reading_lists SET name = $1, list_type = $2 where id = $3 returning *", [req.body.name, req.body.list_type, req.params.id]);
-
-        res.status(200).json({
-            status: "success",
-            results: results.rows.length,
-            data: results.rows[0]
-        })
-    } catch (err) {
-        console.log(err)
-    }
-})
-
-readingListRouter.delete("/api/v1/lists/:id", async (req, res) => {
-
-    try {
-        const results = await db.query("DELETE FROM reading_lists WHERE id = $1", [req.params.id]);
-
-        res.status(204).json({
-            status: "success"
-        })
-    } catch (err) {
-        console.log(err)
-    }
-})
-
 
 
 module.exports = readingListRouter;

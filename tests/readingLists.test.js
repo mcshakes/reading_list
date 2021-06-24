@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const { createTableList, insertReadingList, dropTable } = require("../db/db-utils");
 const supertest = require("supertest");
 const app = require("../app");

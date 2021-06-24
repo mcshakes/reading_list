@@ -12,10 +12,14 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   passReqToCallback: true
 },
-
   async (req, accessToken, refreshToken, profile, done) => {
-    // console.log("User Profile", profile)
-    
+    console.log("")
+    console.log("")
+    console.log("USER", req.body)
+    console.log("")
+    console.log("")
+
+
     const newUser = {
       name: `${profile.name.givenName} ${profile.name.familyName}`,
       email: profile.emails[0].value,
@@ -53,17 +57,15 @@ passport.serializeUser((user, done) => {
   done(null, user.id)
 })
 
-passport.deserializeUser(async (id, done) => {
-  // console.log("USER TRYING TO DESERIALIZE", user)
+passport.deserializeUser((id, done) => {
 
-  const user = db.query(`SELECT user FROM users WHERE id=${id}`, (err,res) => {
-    if (err) {
-      console.log("ERROR DESERIALIZE USER", err)
-      done(err, null);
-    }
+  
+  db.query(`SELECT * FROM users WHERE id=${id}`)
+    .then(response => {
+      done(null, response.rows[0])
+    })
 
-    console.log("USER DESERIALIZE", user);
-  })
+  // console.log("USER DESERIALIZE", user);
+  // if (user) done(null, user);
 
-  if (user) done(null, user);
 })

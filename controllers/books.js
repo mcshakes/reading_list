@@ -1,23 +1,30 @@
 const express = require("express");
 const booksRouter = express.Router({ mergeParams: true });
+const { verify } = require("../middleware/authenticate");
 
 const db = require("../db/index");
 
-booksRouter.get("/api/v1/lists/:id/books", async (req,res) => {
+// *********************************************************************************
+// @desc get all books from user's list WITHOUT authentication
+// @route POST /users/:user_id/lists/:shelf_id/books
+// *********************************************************************************
+
+booksRouter.get("/users/:user_id/shelves/:shelf_id/books", async (req,res) => {
+    const { shelf_id } = req.params
     try {
-        const list = await db.query("SELECT * FROM reading_lists WHERE id = $1", [req.params.id]);
+        const shelvedBooks = await db.query("SELECT * FROM books WHERE shelf_id=$1", [shelf_id]);
 
-        const books = await db.query("SELECT * FROM books WHERE reading_list_id=$1", [req.params.id]);
+        // console.log("THESE BOOKS", shelvedBooks)
 
-        if (books.rowCount != 0) {
-            list.rows[0].books = books.rows;
-        } 
+        // if (shelvedBooks.rowCount != 0) {
+        //     shelvedBooks.rows[0].books = books.rows;
+        // } 
 
         res.status(200).json({
             status: "success",
-            results: books.rows.length,
+            results: shelvedBooks.rowCount,
             data: {
-                reading_lists: list.rows[0]
+                books: shelvedBooks.rows
             }
         })
     } catch (err) {
@@ -25,17 +32,24 @@ booksRouter.get("/api/v1/lists/:id/books", async (req,res) => {
     }
 })
 
-booksRouter.post("/api/v1/lists/:id/books", async (req,res) => {
+// *********************************************************************************
+// @desc Add a book to user's list with AUTH
+// @route POST /users/:user_id/lists/:shelf_id/books
+// *********************************************************************************
 
-    const body = req.body;
+booksRouter.post("/users/:user_id/shelves/:shelf_id/books", verify, async (req,res) => {
 
-    if (body === undefined) {
+    if (req.body === undefined) {
         return res.status(400).json({ error: "content missing"})
     }
 
+    const { user_id, shelf_id } = req.params;
+    const { title, author } = req.body
+    
+
     try {
-        const list = await db.query("INSERT INTO books (title, author, reading_list_id) VALUES ($1, $2, $3) returning *;", 
-                        [body.title, body.author, req.params.id]);
+        const list = await db.query("INSERT INTO books (title, author, shelf_id) VALUES ($1, $2, $3) returning *;", 
+                        [title, author, shelf_id]);
 
         res.status(201).json({
             status: "success",
@@ -46,19 +60,23 @@ booksRouter.post("/api/v1/lists/:id/books", async (req,res) => {
     }
 })
 
-booksRouter.delete("/api/v1/lists/:list_id/books/:book_id", async (req,res) => {
+// *********************************************************************************
+// @desc Remove a book FROM user's shelf with AUTH
+// @route DELETE /users/:user_id/lists/:shelf_id/books/:id
+// *********************************************************************************
+
+booksRouter.delete("/users/:user_id/shelves/:shelf_id/books/:id", verify, async (req,res) => {
+
+    const { user_id, shelf_id, id } = req.params;
+    
 
     try {
-        const results = await db.query("DELETE FROM books WHERE id = $1", [req.params.book_id]);
+        const results = await db.query("DELETE FROM books WHERE id = $1 AND shelf_id = $2", [id, shelf_id]);
         
-        // NEED TO HANDLE WHERE ITEM ALREADY DELETED
+        // DONT NEED TO HANDLE WHERE ITEM ALREADY DELETED, DEPENDANT on book_id
 
         res.status(200).json({
-            status: "success",
-            // results: list,
-            // data: {
-            //     reading_lists: list
-            // }
+            status: "success"
         })
     } catch (err) {
         console.log(err)
