@@ -7,11 +7,11 @@ workflows:
     jobs:
       - build
       - heroku/deploy-via-git:
-        requires:
-          - build
-        filters:
-          branches:
-            only: main
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
 
 jobs:
   build:
